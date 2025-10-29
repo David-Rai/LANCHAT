@@ -1,8 +1,6 @@
 const express=require('express')
 const http=require("http")
 const {Server}=require('socket.io')
-// const userModel=require('./models/users')
-// const messageModel=require('./models/message')
 const cors=require("cors")
 require("dotenv").config()
 
@@ -53,7 +51,7 @@ app.get('/',(req,res)=>{
     res.send("home page ho hai")
 })
 
-const port=process.env.PORT || 3000
+const port=1111
 server.listen(port,()=> console.log("server is live"))
 
 

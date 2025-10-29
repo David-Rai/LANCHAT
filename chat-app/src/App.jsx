@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import { io } from "socket.io-client";
+import {IP,PORT} from '../../config.js'
 
 const App = () => {
-  const [client] = useState(() => io("http://192.168.1.13:3000")); // Only initialize once
+  const [client] = useState(() => io(`${IP}:${PORT}`)); // Only initialize once
   const nameRef = useRef(null);
   const [created, setCreated] = useState(false);
   const [messages, setMessages] = useState([]);
