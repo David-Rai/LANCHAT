@@ -50,9 +50,9 @@ const App = () => {
       ]);
     });
 
-    client.on("new-file-upload",()=>{
-    getFiles()
-    })
+    client.on("new-file-upload", () => {
+      getFiles();
+    });
 
     return () => {
       client.off("join-message");
@@ -130,23 +130,41 @@ const App = () => {
     getFiles();
   }, []);
 
+  const handleDownload = async (fileUrl, fileName) => {
+    const link = document.createElement("a");
+    const SERVER_URL = `http://${IP}:${PORT}${fileUrl}`;
+    const response = await fetch(SERVER_URL);
+    const blob =await response.blob();
+    link.href = URL.createObjectURL(blob);
+    document.body.appendChild(link);
+    link.download = fileName;
+    link.click();
+    URL.revokeObjectURL(link.href);
+    link.remove();
+  };
+
   return (
     <main className="h-screen w-full flex items-center justify-center bg-[#1e1f22]">
       {created ? (
         <div className="h-full w-full max-w-6xl flex bg-[#313338] sm:rounded-lg sm:h-[95vh] sm:my-auto">
           <aside className="w-64 bg-[#2b2d31] p-4 overflow-y-auto border-r border-[#202225]">
-            <h2 className="text-white text-lg mb-4 font-semibold">Files on Chat</h2>
+            <h2 className="text-white text-lg mb-4 font-semibold">
+              Files on Chat
+            </h2>
             <ul className="space-y-2">
               {files.map((file) => (
                 <li key={file.name}>
                   <a
-                    href={`http://localhost:1111${file.url}`}
+                    href={`http://${IP}:${PORT}${file.url}`}
                     target="_blank"
                     rel="noreferrer"
                     className="text-[#b5bac1] hover:text-white text-sm"
                   >
                     {file.name}
                   </a>
+                  <p onClick={() => handleDownload(file.url, file.name)}>
+                    download
+                  </p>
                 </li>
               ))}
             </ul>
@@ -166,7 +184,9 @@ const App = () => {
                   <div
                     key={index}
                     className={`flex w-full ${
-                      m.sender_id === client.id ? "justify-end" : "justify-start"
+                      m.sender_id === client.id
+                        ? "justify-end"
+                        : "justify-start"
                     }`}
                   >
                     <div className="flex items-start gap-3 max-w-[80%]">
@@ -177,7 +197,9 @@ const App = () => {
                       )}
                       <div
                         className={`flex flex-col ${
-                          m.sender_id === client.id ? "items-end" : "items-start"
+                          m.sender_id === client.id
+                            ? "items-end"
+                            : "items-start"
                         }`}
                       >
                         <div className="flex items-baseline gap-2 mb-1">
@@ -247,8 +269,12 @@ const App = () => {
       ) : (
         <div className="bg-[#313338] shadow-2xl w-[90%] max-w-md p-8 flex flex-col gap-6 rounded-lg">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-white mb-2">Welcome back!</h2>
-            <p className="text-[#b5bac1] text-sm">We're so excited to see you again!</p>
+            <h2 className="text-2xl font-bold text-white mb-2">
+              Welcome back!
+            </h2>
+            <p className="text-[#b5bac1] text-sm">
+              We're so excited to see you again!
+            </p>
           </div>
           <div className="flex flex-col gap-2">
             <label className="text-xs font-semibold text-[#b5bac1] uppercase">
