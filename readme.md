@@ -6,6 +6,7 @@ It’s lightweight, fast, and great for offices, classrooms, or home networks.
 ---
 
 <img src="./chat-app/public/lan.jpg">
+<img src="./chat-app/public/ui.png">
 
 ##  Features
 
