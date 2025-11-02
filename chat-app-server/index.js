@@ -19,17 +19,17 @@ const roomName="chat-room"
 io.on("connection",client=>{
     console.log('new client',client.id)
 
-    //getting the name and joining the room
+    //Getting the name and joining the room
     client.on("name",async (name)=>{
         client.username=name
         client.join(roomName)
        client.to(roomName).emit('join-message',`${name} joined`)
     })
 
-    //getting the message form client
-    client.on("send-message",async (message)=>{
-        console.log('new message',message)
-        io.to(roomName).emit("message",{message:message,sender_id:client.id})
+    //Getting the message form client along with the username
+    client.on("send-message",async ({message,name})=>{
+        console.log(`New messagge from ${name} that is ${message}`)
+        io.to(roomName).emit("message",{message:message,sender_id:client.id,sender_name:name})
     })
 
     //sending the message on disconnect

@@ -5,6 +5,7 @@ import {IP,PORT} from '../../config.js'
 const App = () => {
   const [client] = useState(() => io(`${IP}:${PORT}`));
   const nameRef = useRef(null);
+  const [username,setUsername]=useState(null)
   const [created, setCreated] = useState(false);
   const [messages, setMessages] = useState([]);
   const messageRef = useRef(null);
@@ -51,20 +52,23 @@ const App = () => {
     if (nameRef.current.value.trim()) {
       client.emit("name", nameRef.current.value);
       setCreated(true);
+      setUsername(nameRef.current.value)
     } else {
       alert("k ko timro nam ?");
     }
   };
 
+  //Sending the message to socket server with name
   const handleSend = () => {
     if (messageRef.current.value.trim()) {
-      client.emit("send-message", messageRef.current.value);
+      client.emit("send-message", {message:messageRef.current.value,name:username});
       messageRef.current.value = "";
     } else {
       alert("Message at lekha yrr");
     }
   };
 
+  //On enter key press event handling
   const handleKeyPress = (e, action) => {
     if (e.key === "Enter") {
       action();
