@@ -5,6 +5,8 @@ It’s lightweight, fast, and great for offices, classrooms, or home networks.
 
 ---
 
+<img src="./chat-app/public/lan.jpg">
+
 ##  Features
 
 -  Real-time **text chatting** via Socket.IO  
