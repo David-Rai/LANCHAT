@@ -144,6 +144,23 @@ const App = () => {
 
   return (
     <main className="h-screen w-full flex items-center justify-center bg-[#1e1f22]">
+      <div>
+      <h2>Files on Server:</h2>
+      <ul>
+        {files.map((file) => (
+          <li key={file.name}>
+            <a
+              href={`http://localhost:1111${file.url}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {file.name}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+     
       {created ? (
         <div className="h-full w-full max-w-4xl flex flex-col bg-[#313338] sm:rounded-lg sm:h-[95vh] sm:my-auto">
           <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#313338]">

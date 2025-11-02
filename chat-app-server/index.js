@@ -18,7 +18,7 @@ const uploadDir = path.join(__dirname, "uploads");
 
 //Middlewares
 app.use(cors());
-// app.use('/uploads',express.static(uploadDir))
+app.use('/uploads',express.static(uploadDir))
 
 //Storage for the multer
 const storage = multer.diskStorage({
