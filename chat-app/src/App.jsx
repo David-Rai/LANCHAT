@@ -33,6 +33,7 @@ const App = () => {
     });
 
     client.on("message", (message) => {
+     console.log("New message",message)
       setMessages((prevMessages) => [...prevMessages, message]);
     });
 
@@ -94,6 +95,7 @@ const App = () => {
                       : "bg-gray-200 text-gray-800 rounded-bl-sm"
                   }`}
                 >
+                  <p>{m.sender_name}</p>
                   <p className="break-words">{m.message}</p>
                 </div>
               </div>
