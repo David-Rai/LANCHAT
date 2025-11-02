@@ -21,19 +21,13 @@ io.on("connection",client=>{
 
     //getting the name and joining the room
     client.on("name",async (name)=>{
-
         client.username=name
         client.join(roomName)
-    io.to(roomName).emit('join-message',`${name} joined`)
+       client.to(roomName).emit('join-message',`${name} joined`)
     })
 
     //getting the message form client
     client.on("send-message",async (message)=>{
-        // const newMessage=await messageModel.create({
-        //     message,
-        //     sender_id:client.id
-        // })
-
         console.log('new message',message)
         io.to(roomName).emit("message",{message:message,sender_id:client.id})
     })

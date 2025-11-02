@@ -46,6 +46,7 @@ const App = () => {
     };
   }, [client]);
 
+//Joining the room with username
   const handleJoin = () => {
     if (nameRef.current.value.trim()) {
       client.emit("name", nameRef.current.value);
