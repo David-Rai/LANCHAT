@@ -84,7 +84,7 @@ const App = () => {
       // });
 
       setFile(null);
-      setIsFileSelected(false)
+      setIsFileSelected(false);
     } catch (err) {
       console.error(err);
     }
@@ -122,6 +122,23 @@ const App = () => {
     if (selectedFile) {
       setFile(selectedFile);
       setIsFileSelected(true);
+    }
+  };
+
+  const [files, setFiles] = useState([]);
+
+  useEffect(() => {
+    getFiles();
+  }, []);
+
+  const getFiles = async () => {
+    try {
+      const res = await fetch(`http://${IP}:${PORT}/files`);
+      const data = await res.json();
+      console.log(data);
+      setFiles(data);
+    } catch (err) {
+      console.log(err);
     }
   };
 
