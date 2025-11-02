@@ -1,5 +1,6 @@
 const express=require('express')
 const http=require("http")
+const path=require('path')
 const fs=require('fs')
 const multer=require("multer")
 const {Server}=require('socket.io')
@@ -17,11 +18,19 @@ const io=new Server(server,{
 //Middlewares
 app.use(cors())
 
-const upload = multer({ dest: 'uploads/' })
+const storage = multer.diskStorage({
+  destination: "uploads/",
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, `${Date.now()}${ext}`);
+  },
+});
+
+
+const upload = multer({ storage });
 
 //Multer single file upload
 app.post("/upload", upload.single("file"), (req, res) => {
-  console.log(res.file)
   if (!req.file) {
     return res.status(400).json({ error: "No file uploaded!" });
   }
