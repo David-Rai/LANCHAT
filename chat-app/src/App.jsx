@@ -153,7 +153,7 @@ const App = () => {
             </h2>
             <ul className="space-y-2">
               {files.map((file) => (
-                <li key={file.name}>
+                <li key={file.name} className="flex items-center justify-between text-white/40">
                   <a
                     href={`http://${IP}:${PORT}${file.url}`}
                     target="_blank"
@@ -162,9 +162,9 @@ const App = () => {
                   >
                     {file.name}
                   </a>
-                  <p onClick={() => handleDownload(file.url, file.name)}>
-                    download
-                  </p>
+                  <div onClick={() => handleDownload(file.url, file.name)}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down-to-line-icon lucide-arrow-down-to-line"><path d="M12 17V3"/><path d="m6 11 6 6 6-6"/><path d="M19 21H5"/></svg>
+                  </div>
                 </li>
               ))}
             </ul>
