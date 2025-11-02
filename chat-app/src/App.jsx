@@ -40,8 +40,11 @@ const App = () => {
       setMessages((prevMessages) => [...prevMessages, message]);
     });
 
-    client.on("leave-message", (message) => {
-      alert(`${message} leaved`);
+    client.on("leave-message", (user) => {
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { system: true, message: `${user} leaved the chat` },
+      ]);
     });
 
     return () => {
