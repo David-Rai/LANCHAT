@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { io } from "socket.io-client";
-import {IP,PORT} from '../../config.js'
+import { IP, PORT } from "../../config.js";
 
 const App = () => {
   const [client] = useState(() => io(`${IP}:${PORT}`));
   const nameRef = useRef(null);
-  const [username,setUsername]=useState(null)
+  const [username, setUsername] = useState(null);
   const [created, setCreated] = useState(false);
   const [messages, setMessages] = useState([]);
   const messageRef = useRef(null);
@@ -28,16 +28,19 @@ const App = () => {
   }, [created]);
 
   useEffect(() => {
-    client.on("join-message", (message) => {
-      alert(message);
+    client.on("join-message", (newUser) => {
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { system: true, message: `${newUser} joined the chat` },
+      ]);
     });
 
     client.on("message", (message) => {
-     console.log("New message",message)
+      //  console.log("New message",message)
       setMessages((prevMessages) => [...prevMessages, message]);
     });
 
-    client.on('leave-message', message => {
+    client.on("leave-message", (message) => {
       alert(`${message} leaved`);
     });
 
@@ -52,7 +55,7 @@ const App = () => {
     if (nameRef.current.value.trim()) {
       client.emit("name", nameRef.current.value);
       setCreated(true);
-      setUsername(nameRef.current.value)
+      setUsername(nameRef.current.value);
     } else {
       alert("k ko timro nam ?");
     }
@@ -60,7 +63,10 @@ const App = () => {
 
   const handleSend = () => {
     if (messageRef.current.value.trim()) {
-      client.emit("send-message", {message:messageRef.current.value,name:username});
+      client.emit("send-message", {
+        message: messageRef.current.value,
+        name: username,
+      });
       messageRef.current.value = "";
     } else {
       alert("Message at lekha yrr");
@@ -78,46 +84,63 @@ const App = () => {
       {created ? (
         <div className="h-full w-full max-w-4xl flex flex-col bg-[#313338] sm:rounded-lg sm:h-[95vh] sm:my-auto">
           <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#313338]">
-            {messages.map((m, index) => (
-              <div
-                key={index}
-                className={`flex w-full ${
-                  m.sender_id === client.id ? "justify-end" : "justify-start"
-                }`}
-              >
-                <div className="flex items-start gap-3 max-w-[80%]">
-                  {m.sender_id !== client.id && (
-                    <div className="w-10 h-10 rounded-full bg-[#5865f2] flex items-center justify-center flex-shrink-0 font-semibold text-white">
-                      {m.sender_name.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                  <div className={`flex flex-col ${m.sender_id === client.id ? "items-end" : "items-start"}`}>
-                    <div className="flex items-baseline gap-2 mb-1">
-                      <span className="text-sm font-semibold text-white">
-                        {m.sender_name}
-                      </span>
-                      <span className="text-xs text-[#949ba4]">
-                        {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                    </div>
+            {messages.map((m, index) =>
+              m.system ? (
+                <div
+                  key={index}
+                  className="text-center text-[#949ba4] text-sm italic my-2"
+                >
+                  {m.message}
+                </div>
+              ) : (
+                <div
+                  key={index}
+                  className={`flex w-full ${
+                    m.sender_id === client.id ? "justify-end" : "justify-start"
+                  }`}
+                >
+                  <div className="flex items-start gap-3 max-w-[80%]">
+                    {m.sender_id !== client.id && (
+                      <div className="w-10 h-10 rounded-full bg-[#5865f2] flex items-center justify-center flex-shrink-0 font-semibold text-white">
+                        {m.sender_name.charAt(0).toUpperCase()}
+                      </div>
+                    )}
                     <div
-                      className={`px-4 py-2 rounded-lg ${
-                        m.sender_id === client.id
-                          ? "bg-[#5865f2] text-white"
-                          : "bg-[#2b2d31] text-[#dbdee1]"
+                      className={`flex flex-col ${
+                        m.sender_id === client.id ? "items-end" : "items-start"
                       }`}
                     >
-                      <p className="break-words">{m.message}</p>
+                      <div className="flex items-baseline gap-2 mb-1">
+                        <span className="text-sm font-semibold text-white">
+                          {m.sender_name}
+                        </span>
+                        <span className="text-xs text-[#949ba4]">
+                          {new Date().toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      </div>
+                      <div
+                        className={`px-4 py-2 rounded-lg ${
+                          m.sender_id === client.id
+                            ? "bg-[#5865f2] text-white"
+                            : "bg-[#2b2d31] text-[#dbdee1]"
+                        }`}
+                      >
+                        <p className="break-words">{m.message}</p>
+                      </div>
                     </div>
+                    {m.sender_id === client.id && (
+                      <div className="w-10 h-10 rounded-full bg-[#5865f2] flex items-center justify-center flex-shrink-0 font-semibold text-white">
+                        {m.sender_name.charAt(0).toUpperCase()}
+                      </div>
+                    )}
                   </div>
-                  {m.sender_id === client.id && (
-                    <div className="w-10 h-10 rounded-full bg-[#5865f2] flex items-center justify-center flex-shrink-0 font-semibold text-white">
-                      {m.sender_name.charAt(0).toUpperCase()}
-                    </div>
-                  )}
                 </div>
-              </div>
-            ))}
+              )
+            )}
+
             <div ref={messagesEndRef} />
           </div>
 
@@ -142,11 +165,17 @@ const App = () => {
       ) : (
         <div className="bg-[#313338] shadow-2xl w-[90%] max-w-md p-8 flex flex-col gap-6 rounded-lg">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-white mb-2">Welcome back!</h2>
-            <p className="text-[#b5bac1] text-sm">We're so excited to see you again!</p>
+            <h2 className="text-2xl font-bold text-white mb-2">
+              Welcome back!
+            </h2>
+            <p className="text-[#b5bac1] text-sm">
+              We're so excited to see you again!
+            </p>
           </div>
           <div className="flex flex-col gap-2">
-            <label className="text-xs font-semibold text-[#b5bac1] uppercase">Username</label>
+            <label className="text-xs font-semibold text-[#b5bac1] uppercase">
+              Username
+            </label>
             <input
               type="text"
               placeholder="Enter your name"

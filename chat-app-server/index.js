@@ -23,7 +23,7 @@ io.on("connection",client=>{
     client.on("name",async (name)=>{
         client.username=name
         client.join(roomName)
-       client.to(roomName).emit('join-message',`${name} joined`)
+       client.to(roomName).emit('join-message',name)
     })
 
     //Getting the message form client along with the username
