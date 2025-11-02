@@ -14,6 +14,7 @@ const App = () => {
   const messagesEndRef = useRef(null);
   const [file, setFile] = useState("");
   const [files, setFiles] = useState([]);
+  const [showSidebar,setShowSidebar]=useState(false)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -143,14 +144,29 @@ const App = () => {
     link.remove();
   };
 
+  const handleToggleSidebar=()=>{
+   setShowSidebar(!showSidebar)
+  }
+
   return (
     <main className="h-screen w-full flex items-center justify-center bg-[#1e1f22]">
       {created ? (
         <div className="h-full w-full max-w-6xl flex bg-[#313338] sm:rounded-lg sm:h-[95vh] sm:my-auto">
-          <aside className="w-64 bg-[#2b2d31] p-4 overflow-y-auto border-r border-[#202225]">
-            <h2 className="text-white text-lg mb-4 font-semibold">
+          <aside 
+          className="z-20 md:w-64 w-full absolute top-0 left-[-100%]
+           h-screen md:h-auto md:static bg-[#2b2d31] 
+           transition-all
+           p-4 overflow-y-auto border-r border-[#202225]"
+           style={{
+            left:showSidebar ? '0%' : "-100%"
+           }}
+           >
+            <div className="text-white text-lg mb-4 font-semibold flex">
+            <h1>
               Files on Chat
-            </h2>
+            </h1>
+            <button className="md:hidden h-[40xp] w-[120px] bg-[#5865f2] rounded-md ml-5" onClick={handleToggleSidebar}>Close</button>
+            </div>
             <ul className="space-y-2">
               {files.map((file) => (
                 <li key={file.name} className="flex items-center justify-between text-white/40">
@@ -169,6 +185,11 @@ const App = () => {
               ))}
             </ul>
           </aside>
+
+            <button className="md:hidden absolute top-2 left-2 text-white"
+             onClick={handleToggleSidebar}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right-icon lucide-arrow-right"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+             </button>
 
           <div className="flex-1 flex flex-col">
             <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#313338]">
