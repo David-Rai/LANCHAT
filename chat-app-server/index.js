@@ -1,5 +1,7 @@
 const express=require('express')
 const http=require("http")
+const fs=require('fs')
+const multer=require("multer")
 const {Server}=require('socket.io')
 const cors=require("cors")
 require("dotenv").config()
@@ -12,7 +14,27 @@ const io=new Server(server,{
     }
 })
 
+//Middlewares
 app.use(cors())
+
+const upload = multer({ dest: 'uploads/' })
+
+//Multer single file upload
+app.post("/upload", upload.single("file"), (req, res) => {
+  console.log(res.file)
+  if (!req.file) {
+    return res.status(400).json({ error: "No file uploaded!" });
+  }
+
+  res.json({
+    message: "✅ File uploaded successfully!",
+    fileName: req.file.filename,
+    fileType: req.file.mimetype,
+    fileSize: `${(req.file.size / (1024 * 1024)).toFixed(2)} MB`,
+    filePath: `/uploads/${req.file.filename}`,
+  });
+});
+
 
 //web sockets
 const roomName="chat-room"

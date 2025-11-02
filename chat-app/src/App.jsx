@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import axios from "axios";
 import { io } from "socket.io-client";
 import { IP, PORT } from "../../config.js";
 
@@ -6,10 +7,12 @@ const App = () => {
   const [client] = useState(() => io(`${IP}:${PORT}`));
   const nameRef = useRef(null);
   const [username, setUsername] = useState(null);
+  const [isFileSelected, setIsFileSelected] = useState(false);
   const [created, setCreated] = useState(false);
   const [messages, setMessages] = useState([]);
   const messageRef = useRef(null);
   const messagesEndRef = useRef(null);
+  const [file, setFile] = useState("");
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -64,7 +67,35 @@ const App = () => {
     }
   };
 
+  const sendFile = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file); // key = "file"
+      const res = await axios.post(`http://${IP}:${PORT}/upload`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      console.log(res);
+
+      // // 2️⃣ Send file URL to chat via Socket.IO
+      // client.emit("send-message", {
+      //   message: `📎 File: ${res.data.file}`,
+      //   name: "YourUsername",
+      // });
+
+      setFile(null);
+      setIsFileSelected(false)
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const handleSend = () => {
+    if (isFileSelected) {
+      sendFile();
+      return;
+    }
+
     if (messageRef.current.value.trim()) {
       client.emit("send-message", {
         message: messageRef.current.value,
@@ -79,6 +110,18 @@ const App = () => {
   const handleKeyPress = (e, action) => {
     if (e.key === "Enter") {
       action();
+    }
+  };
+
+  //Handling file change
+  const handleFileChange = (e) => {
+    if (isFileSelected) return;
+
+    const selectedFile = e.target.files[0];
+    console.log("selected file", selectedFile);
+    if (selectedFile) {
+      setFile(selectedFile);
+      setIsFileSelected(true);
     }
   };
 
@@ -149,6 +192,18 @@ const App = () => {
 
           <div className="bg-[#313338] p-4">
             <div className="flex gap-2 items-center bg-[#383a40] rounded-lg px-4 py-1">
+              <button className="text-white text-[30px]">
+                <label className="cursor-pointer" htmlFor="fileInput">
+                  +
+                </label>
+                <input
+                  type="file"
+                  className="hidden"
+                  id="fileInput"
+                  onChange={handleFileChange}
+                />
+              </button>
+              {isFileSelected && <p>{file.name}</p>}
               <input
                 type="text"
                 placeholder="Message..."
