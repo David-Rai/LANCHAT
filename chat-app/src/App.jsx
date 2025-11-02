@@ -50,9 +50,14 @@ const App = () => {
       ]);
     });
 
+    client.on("new-file-upload",()=>{
+    getFiles()
+    })
+
     return () => {
       client.off("join-message");
       client.off("message");
+      client.off("new-file-upload");
       client.off("leave-message");
     };
   }, [client]);

@@ -38,6 +38,8 @@ app.post("/upload", upload.single("file"), (req, res) => {
     return res.status(400).json({ error: "No file uploaded!" });
   }
 
+  io.emit('new-file-upload')
+
   res.json({
     message: "✅ File uploaded successfully!",
     fileName: req.file.filename,
