@@ -14,9 +14,11 @@ const io = new Server(server, {
     origin: "*",
   },
 });
+const uploadDir = path.join(__dirname, "uploads");
 
 //Middlewares
 app.use(cors());
+// app.use('/uploads',express.static(uploadDir))
 
 //Storage for the multer
 const storage = multer.diskStorage({
@@ -27,6 +29,7 @@ const storage = multer.diskStorage({
   },
 });
 
+//Upload instance
 const upload = multer({ storage });
 
 //Multer single file upload
@@ -44,7 +47,23 @@ app.post("/upload", upload.single("file"), (req, res) => {
   });
 });
 
-//web sockets
+//Sending all the files from /uploads
+app.get("/files", (req, res) => {
+
+  fs.readdir(uploadDir, (err, files) => {
+    if (err) return res.status(500).json({ error: "Cannot read folder" });
+
+  // Return full URLs to the client
+  const fileUrls = files.map((file) => ({
+    name: file,
+    url: `/uploads/${file}`,
+  }));
+
+  res.json(fileUrls);
+  });
+});
+
+//web sockets Handling
 const roomName = "chat-room";
 io.on("connection", (client) => {
   console.log("new client", client.id);
@@ -78,5 +97,6 @@ app.get("/", (req, res) => {
   res.send("home page ho hai");
 });
 
-const port = 1111;
+//Listening on port 1111
+const port = process.env.PORT || 1111;
 server.listen(port, () => console.log("server is live"));
